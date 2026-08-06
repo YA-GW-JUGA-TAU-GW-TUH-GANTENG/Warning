@@ -32,7 +32,7 @@ run:
 	@echo "$(GREEN)   ✅ SYSTEM READY.$(RESET)"
 	@echo ""
 	@sleep 1
-	@python XyTools.py
+	@python $(PWD)/XyTools.py
 
 # Install dependencies paksa (jika user mau manual)
 install:
