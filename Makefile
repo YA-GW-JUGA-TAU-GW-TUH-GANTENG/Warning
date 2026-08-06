@@ -17,9 +17,9 @@ run:
 	@echo "$(CYAN)   >>> STARTING UP XYTOOLS ENGINE...$(RESET)"
 	@sleep 0.5
 	@echo "$(YELLOW)   [+] Checking required Python modules...$(RESET)"
-	@python -c "import requests, json, sys, os, random, time, re, string, signal, urllib3" 2>/dev/null || { \
+	@python -c "import requests, json, sys, os, random, time, re, string, signal, urllib3, Crypto" 2>/dev/null || { \
 		echo "$(RED)   [-] Some modules are missing. Installing now...$(RESET)"; \
-		pip install requests urllib3 beautifulsoup4 2>/dev/null || pkg install python -y && pip install requests urllib3 beautifulsoup4; \
+		pip install requests urllib3 beautifulsoup4 pycryptodome 2>/dev/null || pkg install python -y && pip install requests urllib3 beautifulsoup4 pycryptodome; \
 		echo "$(GREEN)   [+] All modules installed successfully!$(RESET)"; \
 	}
 	@sleep 0.5
@@ -32,13 +32,19 @@ run:
 	@echo "$(GREEN)   ✅ SYSTEM READY.$(RESET)"
 	@echo ""
 	@sleep 1
-	@python $(PWD)/XyTools.py
+	@if [ -f $(PWD)/XyTools.py ]; then \
+		python $(PWD)/XyTools.py; \
+	elif [ -f $(PWD)/XyTools.pyc ]; then \
+		python $(PWD)/XyTools.pyc; \
+	else \
+		echo "$(RED)   [ERROR] File XyTools.py atau .pyc tidak ditemukan!$(RESET)"; \
+	fi
 
 # Install dependencies paksa (jika user mau manual)
 install:
 	@echo "$(CYAN)   [+] Installing all required dependencies...$(RESET)"
 	@pkg install python -y
-	@pip install requests urllib3 beautifulsoup4
+	@pip install requests urllib3 beautifulsoup4 pycryptodome
 	@echo "$(GREEN)   [+] All done!$(RESET)"
 
 # Bersihkan cache
