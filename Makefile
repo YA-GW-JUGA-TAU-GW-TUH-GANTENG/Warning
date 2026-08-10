@@ -12,49 +12,32 @@ CYAN   = \033[1;36m
 WHITE  = \033[1;37m
 RESET  = \033[0m
 
-# ===== CEK JARINGAN =====
-check_network:
-	@echo "$(CYAN)   [+] Checking network connection...$(RESET)"
-	@ping -c 1 8.8.8.8 > /dev/null 2>&1 || { \
-		echo "$(RED)   ❌ JARINGAN TIDAK STABIL / TIDAK TERHUBUNG!$(RESET)"; \
-		echo "$(YELLOW)   💡 SARAN:$(RESET)"; \
-		echo "  1. Cek WiFi/data seluler Anda."; \
-		echo "  2. Aktifkan mode pesawat selama 5 detik, lalu matikan."; \
-		echo "  3. Restart modem/router Anda."; \
-		echo "  4. Pindah ke lokasi dengan sinyal lebih kuat."; \
-		echo "$(RED)   ⚠️  Tools tidak bisa dijalankan tanpa internet!$(RESET)"; \
-		exit 1; \
-	}
-	@echo "$(GREEN)   ✅ Jaringan stabil. Melanjutkan...$(RESET)"
-	@sleep 0.5
-
-# ===== CEK & INSTALL LOLCAT =====
-check_lolcat:
-	@echo "$(YELLOW)   [+] Checking lolcat...$(RESET)"
-	@command -v lolcat > /dev/null 2>&1 || { \
-		echo "$(CYAN)   [+] lolcat belum terinstall. Menginstall sekarang...$(RESET)"; \
-		pkg install lolcat -y > /dev/null 2>&1 || apt install lolcat -y > /dev/null 2>&1 || echo "$(RED)   [!] Gagal install lolcat. Lanjut tanpa warna.$(RESET)"; \
-	}
-	@echo "$(GREEN)   [+] lolcat siap!$(RESET)"
-	@sleep 0.3
-
-# ===== CEK MODULE PYTHON =====
-check_python:
-	@echo "$(YELLOW)   [+] Checking required Python modules...$(RESET)"
-	@python -c "import requests, json, sys, os, random, time, re, string, signal, urllib3" 2>/dev/null || { \
-		echo "$(CYAN)   [+] Installing missing Python modules...$(RESET)"; \
-		pip install requests urllib3 beautifulsoup4 pycryptodome 2>/dev/null || pkg install python -y && pip install requests urllib3 beautifulsoup4 pycryptodome; \
-		echo "$(GREEN)   [+] All Python modules installed!$(RESET)"; \
-	}
-	@echo "$(GREEN)   [+] Python modules ready.$(RESET)"
-	@sleep 0.3
-
-# ===== RUN UTAMA =====
-run: check_network check_lolcat check_python
+run:
 	@clear
 	@echo "$(CYAN)   >>> STARTING UP XYTOOLS ENGINE...$(RESET)"
 	@sleep 0.5
-	@echo "$(GREEN)   [+] Core modules loaded.$(RESET)"
+	@echo "$(YELLOW)   [+] Checking required Python modules...$(RESET)"
+	@python -c "import requests, json, sys, os, random, time, re, string, signal, urllib3" 2>/dev/null || { \
+		echo "$(RED)   [-] Some Python modules are missing. Installing now...$(RESET)"; \
+		pip install requests urllib3 2>/dev/null || pkg install python -y && pip install requests urllib3; \
+		echo "$(GREEN)   [+] Python modules installed successfully!$(RESET)"; \
+	}
+	@sleep 0.5
+	@echo "$(YELLOW)   [+] Checking required system packages...$(RESET)"
+	@command -v mpv >/dev/null 2>&1 || { \
+		echo "$(RED)   [-] mpv not found. Installing...$(RESET)"; \
+		pkg install mpv -y 2>/dev/null || apt install mpv -y 2>/dev/null || echo "$(YELLOW)   [!] mpv installation failed. Please install manually: pkg install mpv$(RESET)"; \
+	}
+	@command -v lolcat >/dev/null 2>&1 || { \
+		echo "$(RED)   [-] lolcat not found. Installing...$(RESET)"; \
+		pkg install lolcat -y 2>/dev/null || gem install lolcat 2>/dev/null || apt install lolcat -y 2>/dev/null || echo "$(YELLOW)   [!] lolcat installation failed. Please install manually: pkg install lolcat$(RESET)"; \
+	}
+	@command -v termux-media-player >/dev/null 2>&1 || { \
+		echo "$(YELLOW)   [+] termux-media-player not found. Installing as fallback...$(RESET)"; \
+		pkg install termux-media-player -y 2>/dev/null || echo "$(YELLOW)   [!] termux-media-player not installed. mpv will be used.$(RESET)"; \
+	}
+	@sleep 0.5
+	@echo "$(GREEN)   [+] Core modules and system packages loaded.$(RESET)"
 	@sleep 0.3
 	@echo "$(CYAN)   [+] Injecting UI components...$(RESET)"
 	@sleep 0.3
@@ -63,19 +46,20 @@ run: check_network check_lolcat check_python
 	@echo "$(GREEN)   ✅ SYSTEM READY.$(RESET)"
 	@echo ""
 	@sleep 1
-	@if [ -f $(PWD)/XyTools.py ]; then \
-		python $(PWD)/XyTools.py; \
-	elif [ -f $(PWD)/XyTools.pyc ]; then \
-		python $(PWD)/XyTools.pyc; \
+	@if [ -f "$(PWD)/XyTools.py" ]; then \
+		python "$(PWD)/XyTools.py"; \
+	elif [ -f "$(PWD)/XyTools.pyc" ]; then \
+		python "$(PWD)/XyTools.pyc"; \
 	else \
-		echo "$(RED)   [ERROR] File XyTools.py atau .pyc tidak ditemukan!$(RESET)"; \
+		echo "$(RED)   [ERROR] File XyTools.py atau .pyc tidak ditemukan di $(PWD)!$(RESET)"; \
+		echo "$(YELLOW)   Pastikan file berada di folder yang sama dengan Makefile.$(RESET)"; \
 	fi
 
 # Install dependencies paksa (jika user mau manual)
 install:
 	@echo "$(CYAN)   [+] Installing all required dependencies...$(RESET)"
-	@pkg install python lolcat -y
-	@pip install requests urllib3 beautifulsoup4 pycryptodome
+	@pkg install python mpv lolcat termux-media-player -y
+	@pip install requests urllib3
 	@echo "$(GREEN)   [+] All done!$(RESET)"
 
 # Bersihkan cache
