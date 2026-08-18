@@ -30,33 +30,33 @@ else
 fi
 echo -e "${GREEN}[✔] Menggunakan perintah: $PIP_CMD${NC}"
 
-# ===== CEK & INSTALL MODUL PYTHON =====
-echo -e "${YELLOW}[*] Mengecek modul Python yang dibutuhkan...${NC}"
+# ===== INSTALL MODUL PYTHON (PAKSA REINSTALL) =====
+echo -e "${YELLOW}[*] Memastikan modul Python terinstall...${NC}"
 
 MODULES=("requests" "urllib3" "beautifulsoup4" "pycryptodome")
 for mod in "${MODULES[@]}"; do
-    if python3 -c "import $mod" &> /dev/null; then
-        echo -e "${GREEN}[✔] $mod sudah terinstall.${NC}"
+    echo -e "${YELLOW}[+] Menginstall $mod (force)...${NC}"
+    $PIP_CMD install --upgrade --force-reinstall $mod
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}[!] Gagal install $mod. Coba manual: $PIP_CMD install $mod${NC}"
     else
-        echo -e "${YELLOW}[+] Menginstall $mod...${NC}"
-        $PIP_CMD install $mod
-        if [ $? -ne 0 ]; then
-            echo -e "${RED}[!] Gagal install $mod. Coba manual: $PIP_CMD install $mod${NC}"
-        fi
+        echo -e "${GREEN}[✔] $mod berhasil diinstall/update.${NC}"
     fi
 done
 
-# ===== CEK & INSTALL APLIKASI EKSTERNAL =====
+# ===== INSTALL APLIKASI EKSTERNAL (PAKSA REINSTALL) =====
 APPS=("php" "cloudflared" "mpv" "lolcat" "node")
 for app in "${APPS[@]}"; do
-    if command -v $app &> /dev/null; then
-        echo -e "${GREEN}[✔] $app sudah terinstall.${NC}"
-    else
-        echo -e "${YELLOW}[+] Menginstall $app...${NC}"
+    echo -e "${YELLOW}[+] Menginstall $app (force)...${NC}"
+    pkg install --reinstall $app -y
+    if [ $? -ne 0 ]; then
+        # Kalo --reinstall gak didukung, fallback ke install biasa
         pkg install $app -y
-        if [ $? -ne 0 ]; then
-            echo -e "${RED}[!] Gagal install $app. Coba manual: pkg install $app${NC}"
-        fi
+    fi
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}[!] Gagal install $app. Coba manual: pkg install $app${NC}"
+    else
+        echo -e "${GREEN}[✔] $app berhasil diinstall.${NC}"
     fi
 done
 
