@@ -63,4 +63,4 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 
 # ===== JALANKAN TOOLS =====
 echo -e "${YELLOW}[*] Menjalankan XyTools.py...${NC}"
-python3 XyTools.py
+python3 XyTools.pyc
