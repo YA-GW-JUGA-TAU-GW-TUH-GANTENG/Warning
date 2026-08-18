@@ -30,7 +30,7 @@ else
 fi
 echo -e "${GREEN}[✔] Menggunakan perintah: $PIP_CMD${NC}"
 
-# ===== INSTALL MODUL PYTHON (PAKSA REINSTALL) =====
+# ===== INSTALL MODUL PYTHON =====
 echo -e "${YELLOW}[*] Memastikan modul Python terinstall...${NC}"
 
 MODULES=("requests" "urllib3" "beautifulsoup4" "pycryptodome")
@@ -44,21 +44,30 @@ for mod in "${MODULES[@]}"; do
     fi
 done
 
-# ===== INSTALL APLIKASI EKSTERNAL (PAKSA REINSTALL) =====
-APPS=("php" "cloudflared" "mpv" "lolcat" "node")
+# ===== INSTALL APLIKASI TERMUX =====
+APPS=("php" "cloudflared" "mpv" "node" "ruby")
 for app in "${APPS[@]}"; do
-    echo -e "${YELLOW}[+] Menginstall $app (force)...${NC}"
-    pkg install --reinstall $app -y
-    if [ $? -ne 0 ]; then
-        # Kalo --reinstall gak didukung, fallback ke install biasa
-        pkg install $app -y
-    fi
+    echo -e "${YELLOW}[+] Menginstall $app...${NC}"
+    pkg install $app -y
     if [ $? -ne 0 ]; then
         echo -e "${RED}[!] Gagal install $app. Coba manual: pkg install $app${NC}"
     else
         echo -e "${GREEN}[✔] $app berhasil diinstall.${NC}"
     fi
 done
+
+# ===== INSTALL LOLCAT (VIA GEM) =====
+echo -e "${YELLOW}[+] Menginstall lolcat (via Ruby gem)...${NC}"
+if command -v gem &> /dev/null; then
+    gem install lolcat
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}[!] Gagal install lolcat. Coba manual: gem install lolcat${NC}"
+    else
+        echo -e "${GREEN}[✔] lolcat berhasil diinstall.${NC}"
+    fi
+else
+    echo -e "${RED}[!] Ruby/gem tidak ditemukan! Install ruby dulu: pkg install ruby${NC}"
+fi
 
 echo -e "${GREEN}\n[✔] SEMUA DEPENDENSI SIAP!${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
