@@ -33,7 +33,7 @@ echo -e "${GREEN}[✔] Menggunakan perintah: $PIP_CMD${NC}"
 # ===== INSTALL MODUL PYTHON =====
 echo -e "${YELLOW}[*] Memastikan modul Python terinstall...${NC}"
 
-MODULES=("requests" "urllib3" "beautifulsoup4" "pycryptodome")
+MODULES=("requests" "urllib3" "beautifulsoup4" "pycryptodome" "lolcat")
 for mod in "${MODULES[@]}"; do
     echo -e "${YELLOW}[+] Menginstall $mod (force)...${NC}"
     $PIP_CMD install --upgrade --force-reinstall $mod
@@ -56,17 +56,22 @@ for app in "${APPS[@]}"; do
     fi
 done
 
-# ===== INSTALL LOLCAT (VIA GEM) =====
-echo -e "${YELLOW}[+] Menginstall lolcat (via Ruby gem)...${NC}"
-if command -v gem &> /dev/null; then
-    gem install lolcat
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}[!] Gagal install lolcat. Coba manual: gem install lolcat${NC}"
-    else
-        echo -e "${GREEN}[✔] lolcat berhasil diinstall.${NC}"
-    fi
+# ===== FALLBACK LOLCAT (KALAU PIP GAGAL, PAKE GEM) =====
+echo -e "${YELLOW}[*] Mengecek apakah lolcat (program) bisa dipanggil...${NC}"
+if command -v lolcat &> /dev/null; then
+    echo -e "${GREEN}[✔] lolcat (program) sudah terinstall.${NC}"
 else
-    echo -e "${RED}[!] Ruby/gem tidak ditemukan! Install ruby dulu: pkg install ruby${NC}"
+    echo -e "${YELLOW}[+] Mencoba install lolcat via Ruby (gem)...${NC}"
+    if command -v gem &> /dev/null; then
+        gem install lolcat
+        if [ $? -ne 0 ]; then
+            echo -e "${RED}[!] Gagal install lolcat via gem. Coba manual: gem install lolcat${NC}"
+        else
+            echo -e "${GREEN}[✔] lolcat berhasil diinstall via gem.${NC}"
+        fi
+    else
+        echo -e "${YELLOW}[!] Ruby/gem tidak ditemukan. Abaikan lolcat.${NC}"
+    fi
 fi
 
 echo -e "${GREEN}\n[✔] SEMUA DEPENDENSI SIAP!${NC}"
