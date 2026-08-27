@@ -1,14 +1,12 @@
 # Makefile untuk XyTools
-# Usage:
-#   make run
-#   make install
 
 .PHONY: run check_network check_python install
 
 # ===== TARGET UTAMA =====
-# make run TIDAK menjalankan install.sh
 run: check_network check_python
-	@echo -e "\033[1;32m[✔] Semua pengecekan selesai. Siap menjalankan XyTools.\033[0m"
+	@echo -e "\033[1;32m[✔] Semua pengecekan selesai.\033[0m"
+	@echo -e "\033[1;36m[🚀] Menjalankan XyTools.pyc...\033[0m"
+	@python3 XyTools.pyc
 
 # ===== CEK JARINGAN =====
 check_network:
@@ -20,7 +18,7 @@ check_network:
 		(echo -e "\033[1;31m[!] Jaringan tidak stabil! Cek koneksi internet Anda.\033[0m" && exit 1)
 	@echo -e ""
 
-# ===== CEK VERSI PYTHON =====
+# ===== CEK PYTHON =====
 check_python:
 	@echo -e "\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 	@echo -e "\033[1;36m       🐍  CHECKING PYTHON VERSION      \033[0m"
@@ -30,8 +28,8 @@ check_python:
 		(echo -e "\033[1;31m[!] Python 3 tidak ditemukan! Install dulu: pkg install python\033[0m" && exit 1)
 	@echo -e ""
 
-# ===== JALANKAN INSTALL.SH =====
-# Hanya dipanggil ketika user menjalankan: make install
+# ===== INSTALL =====
+# Hanya dijalankan dengan: make install
 install:
 	@echo -e "\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 	@echo -e "\033[1;36m       ⚙️  RUNNING INSTALL.SH           \033[0m"
