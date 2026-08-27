@@ -19,6 +19,48 @@ else
     echo -e "${GREEN}[✔] Python3 terinstall.${NC}"
 fi
 
+# ===== CEK & INSTALL NODE.JS + NPM =====
+echo -e "${YELLOW}[*] Mengecek Node.js & NPM...${NC}"
+if ! command -v node &> /dev/null; then
+    echo -e "${YELLOW}[+] Node.js tidak ditemukan! Menginstall otomatis...${NC}"
+    pkg update && pkg install nodejs -y
+    if command -v node &> /dev/null; then
+        echo -e "${GREEN}[✔] Node.js berhasil diinstall: $(node -v)${NC}"
+    else
+        echo -e "${RED}[!] Gagal install Node.js! Coba manual: pkg install nodejs -y${NC}"
+        exit 1
+    fi
+else
+    echo -e "${GREEN}[✔] Node.js terinstall: $(node -v)${NC}"
+fi
+
+if ! command -v npm &> /dev/null; then
+    echo -e "${YELLOW}[+] NPM tidak ditemukan! Menginstall otomatis...${NC}"
+    pkg install nodejs -y
+    if command -v npm &> /dev/null; then
+        echo -e "${GREEN}[✔] NPM berhasil diinstall: $(npm -v)${NC}"
+    else
+        echo -e "${RED}[!] Gagal install NPM! Coba manual: pkg install nodejs -y${NC}"
+        exit 1
+    fi
+else
+    echo -e "${GREEN}[✔] NPM terinstall: $(npm -v)${NC}"
+fi
+
+# ===== INSTALL DEPENDENCY PACKAGE.JSON (OTOMATIS) =====
+echo -e "${YELLOW}[*] Mengecek package.json...${NC}"
+if [ -f "package.json" ]; then
+    echo -e "${YELLOW}[+] Menginstall dependency dari package.json...${NC}"
+    npm install
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}[!] Gagal install dependency npm! Coba manual: npm install${NC}"
+    else
+        echo -e "${GREEN}[✔] Semua dependency npm berhasil diinstall.${NC}"
+    fi
+else
+    echo -e "${YELLOW}[!] package.json tidak ditemukan. Lewati install npm.${NC}"
+fi
+
 # ===== DETEKSI PIP / PIP3 =====
 if command -v pip3 &> /dev/null; then
     PIP_CMD="pip3"
@@ -45,7 +87,7 @@ for mod in "${MODULES[@]}"; do
 done
 
 # ===== INSTALL APLIKASI TERMUX =====
-APPS=("php" "cloudflared" "mpv" "node" "ruby")
+APPS=("php" "cloudflared" "mpv" "ruby")
 for app in "${APPS[@]}"; do
     echo -e "${YELLOW}[+] Menginstall $app...${NC}"
     pkg install $app -y
