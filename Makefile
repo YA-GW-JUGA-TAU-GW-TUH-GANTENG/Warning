@@ -1,10 +1,14 @@
 # Makefile untuk XyTools
-# Usage: make run
+# Usage:
+#   make run
+#   make install
 
 .PHONY: run check_network check_python install
 
-# Target utama: cek jaringan + python, lalu install & run
-run: check_network check_python install
+# ===== TARGET UTAMA =====
+# make run TIDAK menjalankan install.sh
+run: check_network check_python
+	@echo -e "\033[1;32m[✔] Semua pengecekan selesai. Siap menjalankan XyTools.\033[0m"
 
 # ===== CEK JARINGAN =====
 check_network:
@@ -27,6 +31,7 @@ check_python:
 	@echo -e ""
 
 # ===== JALANKAN INSTALL.SH =====
+# Hanya dipanggil ketika user menjalankan: make install
 install:
 	@echo -e "\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 	@echo -e "\033[1;36m       ⚙️  RUNNING INSTALL.SH           \033[0m"
